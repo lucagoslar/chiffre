@@ -1,4 +1,4 @@
-use std::io::Write;
+mod lib;
 use rsa::{PublicKey, RsaPrivateKey, PaddingScheme, RsaPublicKey};
 
 /*
@@ -56,7 +56,7 @@ fn main() {
 
     let mut rng = rand::rngs::OsRng;
     
-    let bits: usize = 1028;
+    let bits: usize = 1024;
 
     let priv_key = match RsaPrivateKey::new(&mut rng, bits) {
         Ok(key) => key,
@@ -101,35 +101,8 @@ fn main() {
     // full output path
     let fullpath = format!("{}/{}{}", &args.value_of("OUTPUT").unwrap(), &pathname, &suffix);
 
-    if std::path::Path::new(&fullpath).exists() {
-        match std::fs::remove_file(&fullpath) {
-            Ok(_) => {},
-            Err(e) => panic!("{}", e),
-        };
-    }
-
-    let mut dest = match std::fs::File::create(&fullpath) {
-        Ok(file) => file,
-        Err(e) => panic!("{}", e),
-    };
-
-    // write encrypted symmetric key to file
-    match dest.write_all(&enc_key) {
-        Ok(_) => {},
-        Err(e) => panic!("{}", e),
-    }
-
-    // write encrypted symmetric iv to file
-    match dest.write_all(&enc_iv) {
-        Ok(_) => {},
-        Err(e) => panic!("{}", e),
-    }
-
-    // write encrypted bytes to file
-    match dest.write_all(&ciphertext) {
-        Ok(_) => {},
-        Err(e) => panic!("{}", e),
-    }
+    // write encrypted content to destination
+    lib::write::write(&fullpath, &&[enc_key, enc_iv, ciphertext].concat()[..]);
 
     println!("Done.");
 }
