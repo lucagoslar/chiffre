@@ -1,5 +1,6 @@
 mod lib;
 use rsa::{PublicKey, RsaPrivateKey, PaddingScheme, RsaPublicKey};
+use aes_gcm::aead::{Aead, NewAead};
 
 /*
     Read keys from file: https://rust-by-example-ext.com/openssl/rsa.html
@@ -56,7 +57,7 @@ fn main() {
 
     let mut rng = rand::rngs::OsRng;
     
-    let bits: usize = 1024;
+    let bits: usize = 496;
 
     let priv_key = match RsaPrivateKey::new(&mut rng, bits) {
         Ok(key) => key,
@@ -75,19 +76,19 @@ fn main() {
 
 
     // symmetric encryption setup
-    let cipher = openssl::symm::Cipher::aes_128_cbc();
     let data = &*bytes;
-    let key = rand::random::<[u8; 16]>();
-    let iv = rand::random::<[u8; 16]>();
+    
+    let key = rand::random::<[u8; 32]>();
+    let aes_key = aes_gcm::Key::from_slice(&key);
+
+    let cipher = aes_gcm::Aes256Gcm::new(aes_key); // Authenticated Encryption and Associated Data cipher bases on aes
+    
+    let iv = rand::random::<[u8; 12]>();
+    let aes_iv = aes_gcm::Nonce::from_slice(&iv);
 
     // encrypt bytes of input file symmetrically
-    let ciphertext = match openssl::symm::encrypt(
-        cipher,
-        &key,
-        Some(&iv),
-        data
-    ) {
-        Ok(ciphertext) => ciphertext,
+    let ciphertext = match cipher.encrypt(aes_iv,data) {
+        Ok(data) => data,
         Err(e) => panic!("{}", e),
     };
 

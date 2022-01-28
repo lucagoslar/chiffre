@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 clap = "3.0.12"
-openssl = "0.10.38"
+aes-gcm = "0.9.4"
 rsa = "0.5.0"
 rand = "0.8.4"
