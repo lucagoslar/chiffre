@@ -1,0 +1,14 @@
+# Rust
+/target
+/build
+Cargo.lock
+
+# IDE related
+/.idea
+/.vscode
+
+# Miscellaneous
+*.pem
+
+# macOS
+.DS_Store
