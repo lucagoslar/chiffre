@@ -4,6 +4,15 @@
 
 **chiffre** helps you generate RSA key pairs as well as encrypt or decrypt files.
 
+### Installation
+
+#### Homebrew
+
+```zsh
+brew tap lucagoslar/homebrew-repo
+brew install lucagoslar/homebrew-repo/chiffre
+```
+
 ### Usage
 
 If no output flag, `-o <PATH>` or `--output <PATH>`, was provided it defaults to your current location.
